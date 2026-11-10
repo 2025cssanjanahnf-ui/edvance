@@ -22,6 +22,8 @@ jobs:
           cache: "pip"
 
       - name: Install Dependencies
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -30,6 +32,7 @@ jobs:
         env:
           SECRET_KEY: ci-test-secret-key-32-chars-long-12345
           DATABASE_URL: sqlite:///./test_edvance.db
+          PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest tests/ -v --tb=short
+          python -m pytest -q
 
