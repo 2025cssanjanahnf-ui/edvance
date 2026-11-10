@@ -1,0 +1,88 @@
+/* Faculty Portal Specific Styles */
+
+.faculty-eval-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .faculty-eval-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.submission-meta-panel {
+  background-color: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+}
+
+.meta-row:last-child {
+  border-bottom: none;
+}
+
+.meta-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.meta-value {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Student Checkbox Picker in Project Modal */
+.student-picker-list {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  background-color: var(--bg-card);
+}
+
+.student-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.student-picker-item:hover {
+  background-color: var(--bg-muted);
+}
+
+.student-picker-item input[type="checkbox"] {
+  accent-color: var(--accent-600);
+  width: 16px;
+  height: 16px;
+}
+
+.student-picker-info {
+  flex: 1;
+  font-size: 0.825rem;
+}
+
+.student-picker-name {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.student-picker-roll {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+

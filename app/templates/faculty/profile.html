@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDVANCE - Faculty Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/faculty.css">
+</head>
+<body data-role="faculty">
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside id="appSidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <div class="brand-logo-icon">
+            <i data-lucide="graduation-cap" style="width:20px; height:20px;"></i>
+          </div>
+          <div>
+            <div class="brand-title">EDVANCE</div>
+            <div class="brand-tagline">Learn. Build. Submit. Grow.</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/faculty/dashboard" class="nav-link">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/faculty/assignments" class="nav-link">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </a>
+        <a href="/faculty/projects" class="nav-link">
+          <i data-lucide="folder-kanban"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/faculty/submissions" class="nav-link">
+          <i data-lucide="inbox"></i>
+          <span>Submissions</span>
+        </a>
+        <a href="/faculty/evaluation" class="nav-link">
+          <i data-lucide="check-circle-2"></i>
+          <span>Evaluation</span>
+        </a>
+        <a href="/faculty/profile" class="nav-link active">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-mini-profile">
+          <div class="user-avatar" style="background-color: var(--accent-600); color:#FFF;">
+            {{ user.full_name[0] if user.full_name else 'F' }}
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.full_name }}</div>
+            <div class="user-role-tag">{{ user.department_or_major or 'Faculty' }}</div>
+          </div>
+          <button onclick="handleLogout()" class="logout-icon-btn" title="Sign Out">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggleBtn" class="menu-toggle-btn" aria-label="Toggle Navigation">
+            <i data-lucide="menu" style="width:22px; height:22px;"></i>
+          </button>
+          <div class="page-headline">
+            <h1>Faculty Profile</h1>
+            <p>Manage your instructor profile, departmental affiliation, and account security</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="notification-container">
+            <button id="notifBellBtn" class="icon-btn-badge" aria-label="Notifications">
+              <i data-lucide="bell" style="width:19px; height:19px;"></i>
+              <span id="notifBadge" class="badge-count" style="display:none;">0</span>
+            </button>
+            <div id="notifDropdown" class="notification-dropdown">
+              <div class="notif-header">
+                <h4>Notifications</h4>
+                <button id="markAllReadBtn" class="mark-read-link">Mark all as read</button>
+              </div>
+              <ul id="notifList" class="notif-list"></ul>
+            </div>
+          </div>
+
+          <div class="user-pill">
+            <div class="user-pill-avatar" style="background-color: var(--accent-600);">
+              {{ user.full_name[0] if user.full_name else 'F' }}
+            </div>
+            <span class="user-pill-name">{{ user.full_name }}</span>
+            <span class="role-tag faculty">Faculty</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <div class="card" style="max-width: 680px; margin: 0 auto;">
+          <div class="card-header">
+            <h2>Faculty Account Settings</h2>
+          </div>
+          <div class="card-body">
+            <form id="facultyProfileForm">
+              <div class="form-group">
+                <label class="form-label" for="facultyProfileName">Full Name</label>
+                <input type="text" id="facultyProfileName" class="form-control" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="facultyProfileEmail">Institutional Email (Read Only)</label>
+                <input type="email" id="facultyProfileEmail" class="form-control" readonly style="background-color: var(--bg-muted);" />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label" for="facultyProfileDept">Department / Faculty</label>
+                  <input type="text" id="facultyProfileDept" class="form-control" placeholder="e.g. Computer Science" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="facultyProfileEmpId">Faculty / Employee ID</label>
+                  <input type="text" id="facultyProfileEmpId" class="form-control" placeholder="e.g. FAC-CS-101" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="facultyProfileBio">Bio & Research Interests</label>
+                <textarea id="facultyProfileBio" class="form-control" rows="3" placeholder="Brief academic bio and research specialization..."></textarea>
+              </div>
+
+              <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-light);">
+                <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Update Password</h4>
+                <div class="form-group">
+                  <label class="form-label" for="facultyProfileNewPass">New Password (leave blank to keep unchanged)</label>
+                  <input type="password" id="facultyProfileNewPass" class="form-control" placeholder="Minimum 6 characters" />
+                </div>
+              </div>
+
+              <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                <button type="submit" id="saveFacultyProfileBtn" class="btn btn-primary">
+                  Save Profile Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/notifications.js"></script>
+  <script src="/static/js/faculty.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
+

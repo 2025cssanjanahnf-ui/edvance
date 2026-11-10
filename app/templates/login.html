@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDVANCE - Learn. Build. Submit. Grow.</title>
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                  radial-gradient(circle at 85% 80%, rgba(79, 70, 229, 0.06) 0%, transparent 40%),
+                  var(--bg-page);
+      padding: 1.5rem;
+    }
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      width: 100%;
+      max-width: 440px;
+      padding: 2.5rem 2.25rem;
+      position: relative;
+    }
+    .role-segmented-control {
+      display: flex;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 4px;
+      margin-bottom: 1.5rem;
+    }
+    .role-option {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+    }
+    .role-option input {
+      display: none;
+    }
+    .role-option span {
+      display: block;
+      padding: 0.55rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all var(--transition-fast);
+    }
+    .role-option input:checked + span {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: var(--shadow-xs);
+    }
+    .demo-accounts-panel {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .demo-pills-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.65rem;
+    }
+    .demo-pill-btn {
+      background: var(--bg-muted);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-pill);
+      padding: 0.35rem 0.85rem;
+      font-size: 0.775rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    .demo-pill-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+      color: var(--accent-600);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-card">
+    <!-- Brand Identity Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-500), #8B5CF6); border-radius: var(--radius-md); color:#FFF; margin-bottom: 0.85rem; box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);">
+        <i data-lucide="graduation-cap" style="width: 26px; height: 26px;"></i>
+      </div>
+      <h1 style="font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em;">EDVANCE</h1>
+      <p style="font-size: 0.825rem; color: var(--text-muted); margin-top: 0.25rem;">Learn. Build. Submit. Grow.</p>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div id="authErrorAlert" style="display: none; background: var(--danger-soft); color: var(--danger-text); border: 1px solid #FECACA; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.825rem; margin-bottom: 1.25rem;"></div>
+
+    <!-- Login Form -->
+    <form id="loginForm">
+      <!-- Role Selector -->
+      <div class="role-segmented-control">
+        <label class="role-option">
+          <input type="radio" name="authRole" id="roleStudent" value="student" checked />
+          <span>Student Portal</span>
+        </label>
+        <label class="role-option">
+          <input type="radio" name="authRole" id="roleFaculty" value="faculty" />
+          <span>Faculty Portal</span>
+        </label>
+      </div>
+
+      <!-- Email Input -->
+      <div class="form-group">
+        <label class="form-label" for="emailInput">Institutional Email</label>
+        <div style="position: relative;">
+          <input
+            type="email"
+            id="emailInput"
+            class="form-control"
+            placeholder="name@edvance.edu"
+            required
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <!-- Password Input -->
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+          <label class="form-label" for="passwordInput" style="margin-bottom: 0;">Password</label>
+        </div>
+        <div style="position: relative;">
+          <input
+            type="password"
+            id="passwordInput"
+            class="form-control"
+            placeholder="••••••••"
+            required
+            autocomplete="current-password"
+            style="padding-right: 2.75rem;"
+          />
+          <button
+            type="button"
+            id="togglePasswordBtn"
+            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;"
+            aria-label="Toggle password visibility"
+          >
+            <i data-lucide="eye" style="width: 18px; height: 18px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.925rem; margin-top: 0.5rem;">
+        Sign In to EDVANCE
+      </button>
+    </form>
+
+    <!-- Quick Demo Logins -->
+    <div class="demo-accounts-panel">
+      <div style="font-size: 0.75rem; color: var(--text-muted);">Instant Demo Sign-in Credentials:</div>
+      <div class="demo-pills-row">
+        <button type="button" class="demo-pill-btn" onclick="fillDemoStudent()">
+          Demo Student
+        </button>
+        <button type="button" class="demo-pill-btn" onclick="fillDemoFaculty()">
+          Demo Faculty
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
+

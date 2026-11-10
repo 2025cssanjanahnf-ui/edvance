@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDVANCE - Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/student.css">
+</head>
+<body data-role="student">
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside id="appSidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <div class="brand-logo-icon">
+            <i data-lucide="graduation-cap" style="width:20px; height:20px;"></i>
+          </div>
+          <div>
+            <div class="brand-title">EDVANCE</div>
+            <div class="brand-tagline">Learn. Build. Submit. Grow.</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/student/dashboard" class="nav-link">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/student/assignments" class="nav-link">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </a>
+        <a href="/student/projects" class="nav-link active">
+          <i data-lucide="folder-kanban"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/student/submissions" class="nav-link">
+          <i data-lucide="send"></i>
+          <span>My Submissions</span>
+        </a>
+        <a href="/student/feedback" class="nav-link">
+          <i data-lucide="message-square-check"></i>
+          <span>Feedback</span>
+        </a>
+        <a href="/student/profile" class="nav-link">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-mini-profile">
+          <div class="user-avatar">{{ user.full_name[0] if user.full_name else 'S' }}</div>
+          <div class="user-info">
+            <div class="user-name">{{ user.full_name }}</div>
+            <div class="user-role-tag">{{ user.department_or_major or 'Student' }}</div>
+          </div>
+          <button onclick="handleLogout()" class="logout-icon-btn" title="Sign Out">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggleBtn" class="menu-toggle-btn" aria-label="Toggle Navigation">
+            <i data-lucide="menu" style="width:22px; height:22px;"></i>
+          </button>
+          <div class="page-headline">
+            <h1>Academic Projects & Teams</h1>
+            <p>Collaborative project workspaces, team members, and milestone uploads</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Notification Bell -->
+          <div class="notification-container">
+            <button id="notifBellBtn" class="icon-btn-badge" aria-label="Notifications">
+              <i data-lucide="bell" style="width:19px; height:19px;"></i>
+              <span id="notifBadge" class="badge-count" style="display:none;">0</span>
+            </button>
+            <div id="notifDropdown" class="notification-dropdown">
+              <div class="notif-header">
+                <h4>Notifications</h4>
+                <button id="markAllReadBtn" class="mark-read-link">Mark all as read</button>
+              </div>
+              <ul id="notifList" class="notif-list"></ul>
+            </div>
+          </div>
+
+          <!-- User Pill -->
+          <div class="user-pill">
+            <div class="user-pill-avatar">{{ user.full_name[0] if user.full_name else 'S' }}</div>
+            <span class="user-pill-name">{{ user.full_name }}</span>
+            <span class="role-tag student">Student</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <!-- Search and Filter Bar -->
+        <div class="action-bar">
+          <div class="search-filter-group">
+            <div class="search-input-wrap">
+              <i data-lucide="search"></i>
+              <input type="text" id="projectSearchInput" class="search-input" placeholder="Search projects by name or code..." />
+            </div>
+            <select id="projectStatusFilter" class="select-filter">
+              <option value="all">All Statuses</option>
+              <option value="Planning">Planning</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Review">Review</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div id="projectsContainer" class="projects-grid">
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <p>Loading projects...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Student Upload Project Milestone Modal -->
+  <div id="submitProjectDocModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalSubmitProjectTitle">Upload Milestone Document</h3>
+        <button class="modal-close-btn" onclick="closeModal('submitProjectDocModal')">✕</button>
+      </div>
+      <form id="submitProjectDocForm">
+        <div class="modal-body">
+          <input type="hidden" id="submitProjectId" />
+          
+          <div class="form-group">
+            <label class="form-label" for="projDocTitleInput">Milestone / Document Title</label>
+            <input type="text" id="projDocTitleInput" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Attach File (PDF, DOCX, ZIP, PY, etc.)</label>
+            <label class="file-dropzone" for="projDocFileInput">
+              <i data-lucide="upload-cloud" class="dropzone-icon"></i>
+              <div class="dropzone-text">Click or drag document to upload</div>
+              <div class="dropzone-subtext">Max allowable file size: 25MB</div>
+              <input type="file" id="projDocFileInput" style="display:none;" required />
+            </label>
+            <div id="projDocChosenName" class="file-chosen-preview"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('submitProjectDocModal')">Cancel</button>
+          <button type="submit" id="btnConfirmSubmitProjDoc" class="btn btn-primary">Upload Document</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/notifications.js"></script>
+  <script src="/static/js/projects.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
+

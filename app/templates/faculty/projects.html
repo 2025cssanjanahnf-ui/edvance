@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDVANCE - Faculty Project Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/faculty.css">
+</head>
+<body data-role="faculty">
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside id="appSidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <div class="brand-logo-icon">
+            <i data-lucide="graduation-cap" style="width:20px; height:20px;"></i>
+          </div>
+          <div>
+            <div class="brand-title">EDVANCE</div>
+            <div class="brand-tagline">Learn. Build. Submit. Grow.</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/faculty/dashboard" class="nav-link">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/faculty/assignments" class="nav-link">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </a>
+        <a href="/faculty/projects" class="nav-link active">
+          <i data-lucide="folder-kanban"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/faculty/submissions" class="nav-link">
+          <i data-lucide="inbox"></i>
+          <span>Submissions</span>
+        </a>
+        <a href="/faculty/evaluation" class="nav-link">
+          <i data-lucide="check-circle-2"></i>
+          <span>Evaluation</span>
+        </a>
+        <a href="/faculty/profile" class="nav-link">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-mini-profile">
+          <div class="user-avatar" style="background-color: var(--accent-600); color:#FFF;">
+            {{ user.full_name[0] if user.full_name else 'F' }}
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.full_name }}</div>
+            <div class="user-role-tag">{{ user.department_or_major or 'Faculty' }}</div>
+          </div>
+          <button onclick="handleLogout()" class="logout-icon-btn" title="Sign Out">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggleBtn" class="menu-toggle-btn" aria-label="Toggle Navigation">
+            <i data-lucide="menu" style="width:22px; height:22px;"></i>
+          </button>
+          <div class="page-headline">
+            <h1>Academic Projects & Teams</h1>
+            <p>Supervise capstone and research teams, assign student rosters, and track milestones</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="notification-container">
+            <button id="notifBellBtn" class="icon-btn-badge" aria-label="Notifications">
+              <i data-lucide="bell" style="width:19px; height:19px;"></i>
+              <span id="notifBadge" class="badge-count" style="display:none;">0</span>
+            </button>
+            <div id="notifDropdown" class="notification-dropdown">
+              <div class="notif-header">
+                <h4>Notifications</h4>
+                <button id="markAllReadBtn" class="mark-read-link">Mark all as read</button>
+              </div>
+              <ul id="notifList" class="notif-list"></ul>
+            </div>
+          </div>
+
+          <div class="user-pill">
+            <div class="user-pill-avatar" style="background-color: var(--accent-600);">
+              {{ user.full_name[0] if user.full_name else 'F' }}
+            </div>
+            <span class="user-pill-name">{{ user.full_name }}</span>
+            <span class="role-tag faculty">Faculty</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <!-- Action Bar -->
+        <div class="action-bar">
+          <div class="search-filter-group">
+            <div class="search-input-wrap">
+              <i data-lucide="search"></i>
+              <input type="text" id="projectSearchInput" class="search-input" placeholder="Search projects by title or course..." />
+            </div>
+            <select id="projectStatusFilter" class="select-filter">
+              <option value="all">All Statuses</option>
+              <option value="Planning">Planning</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Review">Review</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+
+          <button class="btn btn-primary" onclick="openCreateProjectModal()">
+            <i data-lucide="plus" style="width:16px; height:16px;"></i> Create Project
+          </button>
+        </div>
+
+        <!-- Projects Grid -->
+        <div id="projectsContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:1.5rem;">
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <p>Loading projects...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Faculty Create / Edit Project Modal -->
+  <div id="facultyProjectModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="projectModalTitle">Create New Project</h3>
+        <button class="modal-close-btn" onclick="closeModal('facultyProjectModal')">✕</button>
+      </div>
+      <form id="facultyProjectForm">
+        <div class="modal-body">
+          <input type="hidden" id="projectEditId" />
+
+          <div class="form-group">
+            <label class="form-label" for="projTitleInput">Project Title</label>
+            <input type="text" id="projTitleInput" class="form-control" placeholder="e.g. Autonomous Fleet Simulator" required />
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:1rem;">
+            <div class="form-group">
+              <label class="form-label" for="projCourseInput">Course / Lab Code</label>
+              <input type="text" id="projCourseInput" class="form-control" placeholder="e.g. CS499 - Capstone" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="projStatusSelect">Status</label>
+              <select id="projStatusSelect" class="form-control">
+                <option value="Planning">Planning</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Review">Review</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="projDeadlineInput">Final Project Deadline</label>
+            <input type="datetime-local" id="projDeadlineInput" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="projDescInput">Project Objectives & Deliverables</label>
+            <textarea id="projDescInput" class="form-control" rows="3" placeholder="Describe the scope, architecture requirements, and milestone objectives..." required></textarea>
+          </div>
+
+          <!-- Assign Students Picker -->
+          <div class="form-group">
+            <label class="form-label">Assign Student Team Members</label>
+            <div id="studentPickerContainer" class="student-picker-list">
+              <div style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:1rem;">
+                Loading students...
+              </div>
+            </div>
+            <div class="form-help">Selected students will receive immediate enrollment notifications.</div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('facultyProjectModal')">Cancel</button>
+          <button type="submit" id="btnSaveProject" class="btn btn-primary">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/notifications.js"></script>
+  <script src="/static/js/projects.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
+

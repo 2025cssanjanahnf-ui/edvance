@@ -1,0 +1,35 @@
+name: EDVANCE CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  test:
+    name: Run Automated Unit & Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Pytest Suite
+        env:
+          SECRET_KEY: ci-test-secret-key-32-chars-long-12345
+          DATABASE_URL: sqlite:///./test_edvance.db
+        run: |
+          pytest tests/ -v --tb=short
+

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDVANCE - Submission Evaluation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/faculty.css">
+</head>
+<body data-role="faculty">
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside id="appSidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <div class="brand-logo-icon">
+            <i data-lucide="graduation-cap" style="width:20px; height:20px;"></i>
+          </div>
+          <div>
+            <div class="brand-title">EDVANCE</div>
+            <div class="brand-tagline">Learn. Build. Submit. Grow.</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/faculty/dashboard" class="nav-link">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/faculty/assignments" class="nav-link">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </a>
+        <a href="/faculty/projects" class="nav-link">
+          <i data-lucide="folder-kanban"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/faculty/submissions" class="nav-link">
+          <i data-lucide="inbox"></i>
+          <span>Submissions</span>
+        </a>
+        <a href="/faculty/evaluation" class="nav-link active">
+          <i data-lucide="check-circle-2"></i>
+          <span>Evaluation</span>
+        </a>
+        <a href="/faculty/profile" class="nav-link">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-mini-profile">
+          <div class="user-avatar" style="background-color: var(--accent-600); color:#FFF;">
+            {{ user.full_name[0] if user.full_name else 'F' }}
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.full_name }}</div>
+            <div class="user-role-tag">{{ user.department_or_major or 'Faculty' }}</div>
+          </div>
+          <button onclick="handleLogout()" class="logout-icon-btn" title="Sign Out">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggleBtn" class="menu-toggle-btn" aria-label="Toggle Navigation">
+            <i data-lucide="menu" style="width:22px; height:22px;"></i>
+          </button>
+          <div class="page-headline">
+            <h1>Submission Evaluation & Grading</h1>
+            <p>Score student solutions and provide academic critique</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="notification-container">
+            <button id="notifBellBtn" class="icon-btn-badge" aria-label="Notifications">
+              <i data-lucide="bell" style="width:19px; height:19px;"></i>
+              <span id="notifBadge" class="badge-count" style="display:none;">0</span>
+            </button>
+            <div id="notifDropdown" class="notification-dropdown">
+              <div class="notif-header">
+                <h4>Notifications</h4>
+                <button id="markAllReadBtn" class="mark-read-link">Mark all as read</button>
+              </div>
+              <ul id="notifList" class="notif-list"></ul>
+            </div>
+          </div>
+
+          <div class="user-pill">
+            <div class="user-pill-avatar" style="background-color: var(--accent-600);">
+              {{ user.full_name[0] if user.full_name else 'F' }}
+            </div>
+            <span class="user-pill-name">{{ user.full_name }}</span>
+            <span class="role-tag faculty">Faculty</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <!-- Dedicated Evaluation Panel (shown when ?submission_id is active) -->
+        <div id="standaloneEvalPanel" class="card" style="display:none; max-width:800px; margin: 0 auto;">
+          <div class="card-header">
+            <h2>Evaluate Submission</h2>
+            <a href="/faculty/submissions" class="btn btn-sm btn-secondary">Back to Submissions</a>
+          </div>
+          <div class="card-body">
+            <form id="facultyEvaluationForm">
+              <input type="hidden" id="evalSubmissionId" />
+
+              <div class="submission-meta-panel" style="margin-bottom:1.5rem;">
+                <div class="meta-row">
+                  <span class="meta-label">Submission Title:</span>
+                  <span id="evalMetaTitle" class="meta-value">-</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">Target / Course:</span>
+                  <span id="evalMetaTarget" class="meta-value">-</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">Student:</span>
+                  <span id="evalMetaStudent" class="meta-value">-</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">Uploaded File:</span>
+                  <span id="evalMetaFile" class="meta-value">-</span>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem;">
+                <div class="form-group">
+                  <label class="form-label" for="evalScoreInput">Score (0 - 100)</label>
+                  <input type="number" id="evalScoreInput" class="form-control" min="0" max="100" step="0.5" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="evalStatusSelect">Review Decision</label>
+                  <select id="evalStatusSelect" class="form-control">
+                    <option value="Evaluated">Evaluated / Approved</option>
+                    <option value="Needs Revision">Needs Revision</option>
+                    <option value="Late">Accepted Late</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="evalCommentsInput">Comprehensive Faculty Comments</label>
+                <textarea id="evalCommentsInput" class="form-control" rows="5" placeholder="Detail rubric findings, suggestions for improvement, and strong aspects of the submission..." required></textarea>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+                <a href="/faculty/submissions" class="btn btn-secondary">Cancel</a>
+                <button type="submit" id="btnSaveEvaluation" class="btn btn-primary">
+                  Save & Publish Evaluation
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Standalone Submissions Selector if no ID in URL -->
+        <div id="evalSelectorCard" class="card">
+          <div class="card-header">
+            <h2>Select a Submission to Review</h2>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Submission Title & Target</th>
+                  <th>Student Name & Roll</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Submitted At</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="submissionsContainer">
+                <tr><td colspan="6" style="text-align:center; padding:1.5rem;">Loading submissions for evaluation...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Reusable Evaluation Modal in case clicked from table -->
+  <div id="facultyEvaluateModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:620px;">
+      <div class="modal-header">
+        <h3>Submission Evaluation & Feedback</h3>
+        <button class="modal-close-btn" onclick="closeModal('facultyEvaluateModal')">✕</button>
+      </div>
+      <form id="modalFacultyEvaluationForm">
+        <div class="modal-body">
+          <input type="hidden" id="modalEvalSubId" />
+          <div class="form-group">
+            <label class="form-label">Score (0 - 100)</label>
+            <input type="number" id="modalEvalScore" class="form-control" min="0" max="100" step="0.5" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Comments</label>
+            <textarea id="modalEvalComments" class="form-control" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('facultyEvaluateModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Evaluation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/notifications.js"></script>
+  <script src="/static/js/submissions.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+    // Hide selector if submission_id is present
+    if (new URLSearchParams(window.location.search).get("submission_id")) {
+      const sel = document.getElementById("evalSelectorCard");
+      if (sel) sel.style.display = "none";
+    }
+  </script>
+</body>
+</html>
+

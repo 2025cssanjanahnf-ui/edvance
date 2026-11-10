@@ -1,0 +1,166 @@
+/* Student Portal Specific Styles */
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 2fr 1.1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Greeting Hero Banner */
+.welcome-banner {
+  background: linear-gradient(135deg, var(--navy-950) 0%, var(--navy-850) 60%, #312E81 100%);
+  color: #FFF;
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-banner::after {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.welcome-content h2 {
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.welcome-content p {
+  color: #C7D2FE;
+  font-size: 0.875rem;
+}
+
+/* Project Team Member Chips */
+.team-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.team-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.775rem;
+  color: var(--text-secondary);
+}
+
+.team-chip-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--accent-600);
+  color: #FFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Feedback Card */
+.feedback-card {
+  border-left: 4px solid var(--accent-500);
+  padding: 1.25rem 1.5rem;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border-light);
+  margin-bottom: 1rem;
+}
+
+.feedback-score-badge {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--success);
+  background: var(--success-soft);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+}
+
+.feedback-comment {
+  background: var(--bg-muted);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* Project Cards Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.project-code {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.project-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.project-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+

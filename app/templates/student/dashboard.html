@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EDVANCE - Student Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/student.css">
+</head>
+<body data-role="student">
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside id="appSidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-badge">
+          <div class="brand-logo-icon">
+            <i data-lucide="graduation-cap" style="width:20px; height:20px;"></i>
+          </div>
+          <div>
+            <div class="brand-title">EDVANCE</div>
+            <div class="brand-tagline">Learn. Build. Submit. Grow.</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/student/dashboard" class="nav-link active">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="/student/assignments" class="nav-link">
+          <i data-lucide="file-text"></i>
+          <span>Assignments</span>
+        </a>
+        <a href="/student/projects" class="nav-link">
+          <i data-lucide="folder-kanban"></i>
+          <span>Projects</span>
+        </a>
+        <a href="/student/submissions" class="nav-link">
+          <i data-lucide="send"></i>
+          <span>My Submissions</span>
+        </a>
+        <a href="/student/feedback" class="nav-link">
+          <i data-lucide="message-square-check"></i>
+          <span>Feedback</span>
+        </a>
+        <a href="/student/profile" class="nav-link">
+          <i data-lucide="user"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-mini-profile">
+          <div class="user-avatar">
+            {{ user.full_name[0] if user.full_name else 'S' }}
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.full_name }}</div>
+            <div class="user-role-tag">{{ user.department_or_major or 'Student' }}</div>
+          </div>
+          <button onclick="handleLogout()" class="logout-icon-btn" title="Sign Out">
+            <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="sidebarToggleBtn" class="menu-toggle-btn" aria-label="Toggle Navigation">
+            <i data-lucide="menu" style="width:22px; height:22px;"></i>
+          </button>
+          <div class="page-headline">
+            <h1>Student Portal</h1>
+            <p>Academic progress overview and deadlines</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Notification Bell -->
+          <div class="notification-container">
+            <button id="notifBellBtn" class="icon-btn-badge" aria-label="Notifications">
+              <i data-lucide="bell" style="width:19px; height:19px;"></i>
+              <span id="notifBadge" class="badge-count" style="display:none;">0</span>
+            </button>
+            <div id="notifDropdown" class="notification-dropdown">
+              <div class="notif-header">
+                <h4>Notifications</h4>
+                <button id="markAllReadBtn" class="mark-read-link">Mark all as read</button>
+              </div>
+              <ul id="notifList" class="notif-list"></ul>
+            </div>
+          </div>
+
+          <!-- User Pill -->
+          <div class="user-pill">
+            <div class="user-pill-avatar">
+              {{ user.full_name[0] if user.full_name else 'S' }}
+            </div>
+            <span class="user-pill-name">{{ user.full_name }}</span>
+            <span class="role-tag student">Student</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content" id="studentDashboardStats">
+        <!-- Welcome Hero Banner -->
+        <div class="welcome-banner">
+          <div class="welcome-content">
+            <h2>Welcome back, <span id="studentGreetingName">{{ user.full_name }}</span>!</h2>
+            <p>Department of <span id="studentMajorText">{{ user.department_or_major or 'Engineering & Technology' }}</span> • Ready to submit your milestones?</p>
+          </div>
+        </div>
+
+        <!-- Metric Summary Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon-wrap indigo">
+              <i data-lucide="book-open"></i>
+            </div>
+            <div class="metric-data">
+              <h3 id="metricActiveAssignments">-</h3>
+              <p>Active Assignments</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap emerald">
+              <i data-lucide="folder-git-2"></i>
+            </div>
+            <div class="metric-data">
+              <h3 id="metricOngoingProjects">-</h3>
+              <p>Ongoing Projects</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap amber">
+              <i data-lucide="clock"></i>
+            </div>
+            <div class="metric-data">
+              <h3 id="metricPendingSubmissions">-</h3>
+              <p>Pending Submissions</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon-wrap blue">
+              <i data-lucide="award"></i>
+            </div>
+            <div class="metric-data">
+              <h3 id="metricFeedbackCount">-</h3>
+              <p>Evaluations Received</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Section: Deadlines & Calendar -->
+        <div class="dashboard-layout">
+          <!-- Left Column -->
+          <div>
+            <!-- Upcoming Deadlines Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Upcoming Deadlines</h2>
+                <a href="/student/assignments" class="btn btn-sm btn-secondary">View All</a>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Title & Course</th>
+                      <th>Type</th>
+                      <th>Due Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="upcomingDeadlinesList">
+                    <tr><td colspan="4" style="text-align:center; padding:1.5rem;">Loading deadlines...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="card">
+              <div class="card-header">
+                <h2>Recent Activity</h2>
+                <a href="/student/submissions" class="btn btn-sm btn-secondary">My Submissions</a>
+              </div>
+              <div class="card-body" id="recentActivitiesList">
+                <p style="color:var(--text-muted); font-size:0.85rem;">Loading recent activity...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive Monthly Calendar -->
+          <div>
+            <div class="calendar-card">
+              <div class="calendar-header">
+                <h3 id="calendarMonthTitle" class="calendar-title">Month</h3>
+                <div style="display:flex; gap:6px;">
+                  <button id="calPrevMonthBtn" class="cal-nav-btn" aria-label="Previous Month">
+                    <i data-lucide="chevron-left" style="width:16px; height:16px;"></i>
+                  </button>
+                  <button id="calNextMonthBtn" class="cal-nav-btn" aria-label="Next Month">
+                    <i data-lucide="chevron-right" style="width:16px; height:16px;"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div id="calendarDaysGrid" class="calendar-grid">
+                <!-- Days rendered dynamically by student.js -->
+              </div>
+
+              <!-- Selected Day Events Box -->
+              <div id="calendarSelectedDayEvents" style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-light);">
+                <div style="font-size:0.8rem; color:var(--text-muted); text-align:center;">
+                  Click on any day in the calendar to check due milestones.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/static/js/main.js"></script>
+  <script src="/static/js/notifications.js"></script>
+  <script src="/static/js/student.js"></script>
+  <script>
+    if (window.lucide) window.lucide.createIcons();
+  </script>
+</body>
+</html>
+
